@@ -20,12 +20,6 @@ jobs:
           paths:
             - node_modules
           key: app-{{ checksum "package.json" }}
-      - run:
-          name: Update APT Sources
-          command: |
-            echo "deb http://deb.debian.org/debian stretch main" > /etc/apt/sources.list
-            echo "deb http://deb.debian.org/debian stretch-updates main" >> /etc/apt/sources.list
-            echo "deb http://security.debian.org/debian-security stretch/updates main" >> /etc/apt/sources.list
 
   deploy-to-aws-s3:
     docker:
@@ -55,15 +49,16 @@ jobs:
       - run:
           name: Deploy to AWS S3
           command: |
-            if ["${CIRCLE_BRANCH}" == "master"}]
+            if [ "${CIRCLE_BRANCH}" == "master" ]
             then
               aws --region ${AWS_REGION} s3 sync ~/repo/build s3://${AWS_PROD_BUCKET} --delete
-            elif ["${CIRCLE_BRANCH}" == "staging"}]
+            elif [ "${CIRCLE_BRANCH}" == "staging" ]
             then
               aws --region ${AWS_REGION} s3 sync ~/repo/build s3://${AWS_STAGING_BUCKET} --delete
             else
               aws --region ${AWS_REGION} s3 sync ~/repo/build s3://${AWS_DEV_BUCKET} --delete
             fi
+
   deploy-to-aws-cloudfront:
     docker:
       - image: circleci/node:13.12.0
@@ -92,15 +87,16 @@ jobs:
           name: Deploy to AWS CloudFront
           command: |
             aws configure set preview.cloudfront
-            if ["${CIRCLE_BRANCH}" == "master"}]
+            if [ "${CIRCLE_BRANCH}" == "master" ]
             then
               aws cloudfront create-invalidation --distribution-id ${PROD_DISTRIBUTION_ID} --paths "/*"
-            elif ["${CIRCLE_BRANCH}" == "staging"}]
+            elif [ "${CIRCLE_BRANCH}" == "staging" ]
             then
               aws cloudfront create-invalidation --distribution-id ${STAGING_DISTRIBUTION_ID} --paths "/*"
             else
               aws cloudfront create-invalidation --distribution-id ${DEV_DISTRIBUTION_ID} --paths "/*"
             fi
+
 workflows:
   build_and_deploy:
     jobs:
