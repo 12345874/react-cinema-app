@@ -11,7 +11,7 @@ jobs:
         command: echo ${CURRENT_BRANCH}
     - restore_cache:
         keys:
-          - app-{{ checksum "package.json" }}
+          - npm-deps-{{ checksum "package.json" }}
           - app-
     - run: 
         name: Install yarn
@@ -21,8 +21,8 @@ jobs:
         command: npm install
     - save_cache:
         paths:
-          - node_modules
-        key: app-{{ checksum "package.json" }}
+          - ~/.npm
+        key: npm-deps-{{ checksum "package.json" }}
 
 
   deploy-to-aws-s3:
