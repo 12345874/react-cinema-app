@@ -57,7 +57,6 @@ jobs:
             else
               aws --region ${AWS_REGION} s3 sync ~/repo/build s3://${AWS_DEV_BUCKET} --delete
             fi
-
   deploy-to-aws-cloudfront:
     docker:
       - image: cimg/node:13.12.0
