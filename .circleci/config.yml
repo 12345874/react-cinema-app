@@ -20,6 +20,13 @@ jobs:
           paths:
             - node_modules
           key: app-{{ checksum "package.json" }}
+      - run:
+          name: Update APT Sources
+          command: |
+            echo "deb http://deb.debian.org/debian stretch main" > /etc/apt/sources.list
+            echo "deb http://deb.debian.org/debian stretch-updates main" >> /etc/apt/sources.list
+            echo "deb http://security.debian.org/debian-security stretch/updates main" >> /etc/apt/sources.list
+
   deploy-to-aws-s3:
     docker:
       - image: circleci/node:13.12.0
