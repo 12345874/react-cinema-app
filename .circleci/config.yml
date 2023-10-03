@@ -45,7 +45,6 @@ aliases:
 jobs:
   build:
     executor: app-executor
-    working_directory: ~/repo
     steps:
       - checkout
       - *show-current-branch-name
@@ -55,7 +54,6 @@ jobs:
       
   linting:
     executor: app-executor
-    working_directory: ~/repo
     steps:
       - checkout
       - *show-current-branch-name
