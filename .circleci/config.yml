@@ -8,10 +8,10 @@ executors:
     working_directory: ~/repo
   slack-executor:
     docker:
-      - image: 'cibuilds/base:latest'
+      - image: "cibuilds/base:latest"
     resource_class: small
 
-aliases: 
+aliases:
   - &show-current-branch-name
     run:
       name: Show current branch
@@ -57,7 +57,7 @@ jobs:
       - *restore-cache
       - *install-dependencies
       - *save-cache
-      
+
   linting:
     executor: app-executor
     steps:
@@ -123,19 +123,55 @@ jobs:
     steps:
       - run: echo "Slack notification"
       - slack/notify:
-          event: 'always'
-          channel: 'cinema-circleci'
-          template: ''
+          event: "always"
+          channel: "cinema-circleci"
+          template: ""
           custom: |
             {
               "blocks": [
                 {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "${CIRCLE_BRANCH} branch deployment to aws s3 and cloudfront is complete. 👍",
+                    "emoji": true
+                  }
+                },
+                {
                   "type": "section",
                   "fields": [
                     {
-                      "type": "plain_text",
-                      "text": "*This is a text notification*",
-                      "emoji": true
+                      "type": "mrkdwn",
+                      "text": "*Project*:\n$CIRCLE_PROJECT_REPONAME"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Branch*:\n$CIRCLE_BRANCH"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*When*:\n$(date +'%m/%d/%Y %T')"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Build*:\n$CIRCLE_BUILD_NUM"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Author*:\n$CIRCLE_PROJECT_USERNAME"
+                    }
+                  ]
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View Job"
+                      },
+                      "url": "${CIRCLE_BUILD_URL}"
                     }
                   ]
                 }
