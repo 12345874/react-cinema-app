@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './Header.scss';
 import logo from '../../assets/cinema-logo.svg';
+import { getMovies, setMovieType, setResponsePageNumber } from '../../redux/action/movies';
+import { useDispatch, useSelector } from 'react-redux';
 
 const HEADER_LIST = [
   {
@@ -30,8 +32,24 @@ const HEADER_LIST = [
 ];
 
 function Header() {
+  const dispatch = useDispatch();
+  const movies = useSelector((state) => state.movies);
+  const { page, totalPages } = movies;
   const [navClass, setNavClass] = useState(false);
   const [menuClass, setMenuClass] = useState(false);
+  const [type, setType] = useState('now_playing');
+
+  useEffect(() => {
+    dispatch(getMovies(type, page));
+    setResponsePageNumber(page, totalPages);
+
+    // eslint-disable-next-line
+  }, [type]);
+
+  const setMovieTypeUrl = (type) => {
+    setType(type);
+    dispatch(setMovieType(type));
+  };
 
   const toggleMenu = () => {
     const navClassClone = navClass;
@@ -58,7 +76,7 @@ function Header() {
         </div>
         <ul className={`${navClass ? 'header-nav header-mobile-nav' : 'header-nav'}`}>
           {HEADER_LIST.map((data) => (
-            <li key={data.id} className="header-nav-item">
+            <li key={data.id} className={data.type === type ? 'header-nav-item active-item' : 'header-nav-item'} onClick={() => setMovieTypeUrl(data.type)}>
               <span className="header-list-name">
                 <i className={data.iconClass}></i>
               </span>

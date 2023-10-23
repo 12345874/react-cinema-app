@@ -3,7 +3,6 @@ import './SlideShow.scss';
 
 function SlideShow(props) {
   const { images, auto, showArrow } = props;
-
   const [state, setState] = useState({
     slideShow: images[0],
     slideIndex: 0
@@ -19,7 +18,7 @@ function SlideShow(props) {
     if (auto) {
       const timeInterval = setInterval(() => {
         autoMoveSlide();
-      }, 5000);
+      }, 3000);
       setSliderInterval(timeInterval);
       return () => {
         clearInterval(timeInterval);
@@ -28,7 +27,7 @@ function SlideShow(props) {
     }
 
     // eslint-disable-next-line
-  }, []);
+  }, [images]);
 
   const autoMoveSlide = () => {
     let lastIndex = 0;
