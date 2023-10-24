@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadMoreMovies } from '../../redux/action/movies';
 import MainContent from '../content/main-content/MainContent';
+import SearchResult from '../search-result/SearchResult';
 import Spinner from '../spinner/Spinner';
 import './Main.scss';
 
@@ -9,9 +10,7 @@ function Main() {
   const dispatch = useDispatch();
 
   const movies = useSelector((state) => state.movies);
-  const { list, page, totalPages, movieType } = movies;
-
-  console.log('list', list);
+  const { page, totalPages, movieType, searchResult } = movies;
 
   const [currentPage, setCurrentPage] = useState(page);
   const [loading, setLoading] = useState(false);
@@ -44,7 +43,7 @@ function Main() {
   return (
     <>
       <div className="main" ref={mainRef} onScroll={handleScroll}>
-        {loading ? <Spinner /> : <MainContent />}
+        {loading ? <Spinner /> : <>{searchResult && searchResult.length === 0 ? <MainContent /> : <SearchResult />}</>}
         <div ref={bottomLineRef}></div>
       </div>
     </>

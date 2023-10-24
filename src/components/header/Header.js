@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './Header.scss';
 import logo from '../../assets/cinema-logo.svg';
-import { getMovies, setMovieType, setResponsePageNumber } from '../../redux/action/movies';
+import { getMovies, searchQuery, searchResultAction, setMovieType, setResponsePageNumber } from '../../redux/action/movies';
 import { useDispatch, useSelector } from 'react-redux';
 
 const HEADER_LIST = [
@@ -38,6 +38,7 @@ function Header() {
   const [navClass, setNavClass] = useState(false);
   const [menuClass, setMenuClass] = useState(false);
   const [type, setType] = useState('now_playing');
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     dispatch(getMovies(type, page));
@@ -62,6 +63,12 @@ function Header() {
     }
   };
 
+  const onSearchChange = (e) => {
+    setSearch(e.target.value);
+    dispatch(searchQuery(e.target.value));
+    dispatch(searchResultAction(e.target.value));
+  };
+
   return (
     <div className="header-nav-wrapper">
       <div className="header-bar"></div>
@@ -84,7 +91,7 @@ function Header() {
               <span className="header-list-name">{data.name}</span>
             </li>
           ))}
-          <input className="search-input" type="text" placeholder="Search for a movie" />
+          <input className="search-input" type="text" placeholder="Search for a movie" value={search} onChange={onSearchChange} />
         </ul>
       </div>
     </div>

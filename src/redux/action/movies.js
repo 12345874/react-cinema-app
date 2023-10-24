@@ -1,5 +1,5 @@
-import { MOVIE_API_URL } from '../../services/movies.service';
-import { LOAD_MORE_RESULTS, MOVIE_LIST, MOVIE_TYPE, RESPONSE_PAGE } from '../types';
+import { MOVIE_API_URL, SEARCH_API_URL } from '../../services/movies.service';
+import { LOAD_MORE_RESULTS, MOVIE_LIST, MOVIE_TYPE, RESPONSE_PAGE, SEARCH_QUERY, SEARCH_RESULT } from '../types';
 import { getError } from './error';
 
 export const getMovieList = (payload) => ({
@@ -20,6 +20,16 @@ export const getResponsePage = (payload) => ({
 export const setMovieType = (type) => ({
   type: MOVIE_TYPE,
   payload: type
+});
+
+export const searchResults = (data) => ({
+  type: SEARCH_RESULT,
+  payload: data
+});
+
+export const searchQuery = (query) => ({
+  type: SEARCH_QUERY,
+  payload: query
 });
 
 export const getMovies = (type, pageNumber) => {
@@ -44,8 +54,25 @@ export const loadMoreMovies = (type, pageNumber) => {
       const { results, payload } = response;
 
       const res = { list: results, page: payload.page, totalPages: payload.totalPages };
-      console.log(res);
       dispatch(loadMoreResults(res));
+    } catch (error) {
+      if (error.response) {
+        dispatch(getError(error.response.data.message));
+      }
+    }
+  };
+};
+
+export const searchResultAction = (query) => {
+  return async (dispatch) => {
+    try {
+      if (query) {
+        const movies = await SEARCH_API_URL(query);
+        const { results } = movies.data;
+        dispatch(searchResults(results));
+      } else {
+        dispatch(searchResults([]));
+      }
     } catch (error) {
       if (error.response) {
         dispatch(getError(error.response.data.message));
