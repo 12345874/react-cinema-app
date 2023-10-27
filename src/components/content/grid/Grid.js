@@ -5,6 +5,7 @@ import './Grid.scss';
 import Rating from '../rating/Rating';
 import { useSelector } from 'react-redux';
 import { IMAGE_URL } from '../../../services/movies.service';
+import { Link } from 'react-router-dom';
 
 const Grid = () => {
   const moviesList = useSelector((state) => state.movies);
@@ -16,6 +17,11 @@ const Grid = () => {
     setMovieData(list);
   }, [list]);
 
+  const formatMovieTitle = (title) => {
+    const titleStr = title.toLowerCase();
+    return titleStr.replace(/ /g, '-');
+  };
+
   return (
     <>
       <div className="grid">
@@ -23,7 +29,9 @@ const Grid = () => {
           <div key={i}>
             <div className="grid-cell" style={{ backgroundImage: data.poster_path ? `url(${IMAGE_URL}${data.poster_path})` : '' }}>
               <div className="grid-read-more">
-                <button className="grid-cell-button">Read More</button>
+                <button className="grid-cell-button">
+                  <Link to={`/${data.id}/${formatMovieTitle(data.title)}/details`}>Read More</Link>
+                </button>
               </div>
               <div className="grid-detail">
                 <span className="grid-detail-title">{data.title}</span>

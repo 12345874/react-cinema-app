@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import './Header.scss';
 import logo from '../../assets/cinema-logo.svg';
-import { getMovies, searchQuery, searchResultAction, setMovieType, setResponsePageNumber } from '../../redux/action/movies';
+import { clearMovieDetails, getMovies, searchQuery, searchResultAction, setMovieType, setResponsePageNumber } from '../../redux/action/movies';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const HEADER_LIST = [
   {
@@ -33,23 +34,38 @@ const HEADER_LIST = [
 
 function Header() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
   const movies = useSelector((state) => state.movies);
   const { page, totalPages } = movies;
   const [navClass, setNavClass] = useState(false);
   const [menuClass, setMenuClass] = useState(false);
   const [type, setType] = useState('now_playing');
   const [search, setSearch] = useState('');
+  const [disableSearch, setDisableSearch] = useState(false);
 
   useEffect(() => {
     dispatch(getMovies(type, page));
     setResponsePageNumber(page, totalPages);
 
+    if (location.pathname !== '/' && location.key) {
+      setDisableSearch(true);
+    }
+
     // eslint-disable-next-line
-  }, [type]);
+  }, [type, disableSearch, location]);
 
   const setMovieTypeUrl = (type) => {
-    setType(type);
-    dispatch(setMovieType(type));
+    setDisableSearch(false);
+    if (location.pathname !== '/') {
+      clearMovieDetails();
+      navigate('/');
+      setType(type);
+      dispatch(setMovieType(type));
+    } else {
+      setType(type);
+      dispatch(setMovieType(type));
+    }
   };
 
   const toggleMenu = () => {
@@ -68,6 +84,8 @@ function Header() {
     dispatch(searchQuery(e.target.value));
     dispatch(searchResultAction(e.target.value));
   };
+
+  console.log(disableSearch);
 
   return (
     <div className="header-nav-wrapper">
@@ -91,7 +109,7 @@ function Header() {
               <span className="header-list-name">{data.name}</span>
             </li>
           ))}
-          <input className="search-input" type="text" placeholder="Search for a movie" value={search} onChange={onSearchChange} />
+          <input className={`search-input ${disableSearch ? 'disabled' : ''}`} type="text" placeholder="Search for a movie" value={search} onChange={onSearchChange} />
         </ul>
       </div>
     </div>

@@ -4,6 +4,8 @@ import Header from './components/header/Header';
 import Main from './components/main/Main';
 import { useDispatch } from 'react-redux';
 import { getMovies } from './redux/action/movies';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Details from './components/content/details/Details';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -14,8 +16,15 @@ const App = () => {
 
   return (
     <div className="App">
-      <Header />
-      <Main />
+      <BrowserRouter>
+        <Header />
+        <div className="app">
+          <Routes>
+            <Route exact path="/" element={<Main />} />
+            <Route exact path="/:id/:name/details" element={<Details />} />
+          </Routes>
+        </div>
+      </BrowserRouter>
     </div>
   );
 };
